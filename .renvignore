@@ -1,0 +1,8 @@
+.git/
+data/annotations/
+data/images/
+data/processed/
+detectors/
+docs/
+envs/
+results/

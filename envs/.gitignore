@@ -1,0 +1,7 @@
+general/
+pycocotools/
+sahi/
+yolov5/
+yolov7/
+
+requirements_general_no_version.txt
