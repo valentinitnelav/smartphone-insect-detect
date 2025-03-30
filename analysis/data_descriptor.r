@@ -32,11 +32,35 @@ dt_raw[, .N, by = .(date, plant_folder)] %>% nrow()
 dt[, .N, by = .(date, plant_folder)] %>% nrow() 
 # 201 end up in the cleaned dataset (cropped images)
 
-# Nr plant species
+# Nr plant species:
 dt_raw[, uniqueN(.SD, by = c("plant_genus", "plant_epithet"))] 
 # 33 distinct plant species
 dt[, uniqueN(.SD, by = c("plant_genus", "plant_epithet"))] 
-# 32 remain in the cropped dataset for analysis
+# 32 remain in the cropped dataset for analysis.
+
+# Plant backgrounds are very skewed (long tailed) with most images of Centaurea
+# jacea.
+
+# - by nr. of boxes
+dt_plant_box <- dt[, .(n_box = .N), keyby = .(plant_genus, plant_epithet)][order(-n_box)]
+dt_plant_box$n_box %>% sum() # 24838 expected
+dt_plant_box[, percent := round(n_box/sum(n_box) *100, 2)]
+dt_plant_box[, cumul_sum := cumsum(percent) %>% round(2)]
+dt_plant_box
+dt_plant_box[1:4]
+#    plant_genus plant_epithet n_ind percent cumul_sum
+# 1:   centaurea         jacea  6612   26.62     26.62
+# 2:      daucus        carota  4732   19.05     45.67
+# 3:    clematis       vitalba  2059    8.29     53.96
+# 4:     carduus   acanthoides  1524    6.14     60.10
+
+# - by unique images
+dt_plant_img <- unique(dt, by = "filename_full_frame")
+dt_plant_img <- dt_plant_img[, .(n_img = .N), keyby = .(plant_genus, plant_epithet)][order(-n_img)]
+dt_plant_img[, percent := round(n_img/sum(n_img) *100, 2)]
+dt_plant_img[, cumul_sum := cumsum(percent) %>% round(2)]
+dt_plant_img
+
 
 # Initial Nr images in dt_raw and how many are left in the OOD dataset.
 # Number of annotated images and boxes in the raw dataset:
