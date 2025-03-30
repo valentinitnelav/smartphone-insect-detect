@@ -1,4 +1,4 @@
-This contains various scripts and notebooks needed for intermediary processes from data preparation to model evaluation.
+This contains various scripts and notebooks needed for intermediary processes to arrive to model evaluation.
 
 The code was executed in the following order:
 

@@ -9,7 +9,7 @@ Some of the first steps (like 1, 2 & 3) are optional if you do not want to proce
 3. `crop_full_frames.py`: crops the full frame images to arrive to the OOD images.
 4. `make_via_json_cropped_frames.py`: prepares the VIA JSON files with the annotations for the cropped frames.
 5. `compute_sharpness.py`: 
-    - computes the sharpness metrics of the pixels within the insect boxes and appends them to the OOD annotation dataset.
+    - computes the sharpness metric of the pixels within the insect boxes and appends them to the OOD annotation dataset.
 6. `ground_truths_to_coco.py`:
     - Converts the ground truth annotations in tabular format (from a Feather file) to COCO format (JSON file).
     - The COCO format is needed for the evaluation run with `./code/coco_eval.py`.
