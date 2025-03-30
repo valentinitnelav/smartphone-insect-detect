@@ -179,7 +179,7 @@ round(pp * 100, 2) # 78.9
 # Test whether Diptera misclassifications occur more than expected by chance.
 # So, test whether the observed rate of “success” (error rate in my case)
 # differs from 50%, which you can interpret as a “by chance alone” scenario
-# (i.e., no bias toward Diptera or Other).
+# (i.e., no bias toward Diptera or OtherT).
 p_expected <- 0.5
 
 # Compute the number of expected miscclasifications for each investigated
@@ -325,7 +325,7 @@ rename_map <- c(
   "n_cor" = "N. correctly classified",
   "n_mis_loc" = "N. misclassified, total (from those localised)",
   "n_mis_target" = "N. misclassified as Diptera",
-  "n_mis_other" = "N. misclassified as Other",
+  "n_mis_other" = "N. misclassified as OtherT",
   "prop_mis_from_mis_loc" = "% misclassified as Diptera from #4",
   "n_mis_expect" = "N. misclassified as Diptera, expected",
   "p_binomial" = "p-value, binomial test for #5 & #7",
