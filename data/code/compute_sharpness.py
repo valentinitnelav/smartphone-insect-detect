@@ -3,23 +3,15 @@ Overview:
 
 Compute sharpness/blurriness of pixels within insect boxes in cropped images.
 
-Metrics:
+Metric: Tenengrad (Sobel's operator).
 
-- Laplacian Variance: Measures image sharpness by calculating the variance of
-the Laplacian.
-- Tenengrad (Sobel's operator): Computes the sum of squared gradients,
-  exploiting high-frequency components in sharp images.
+Quantifies edge presence, which is reduced in blurred images. Higher values
+indicate sharper images, lower values indicate blurrier images. This metrics
+measure high-frequency content, not direct focus.
 
-Both metrics quantify edge presence, which is reduced in blurred images.
-Higher values indicate sharper images, lower values indicate blurrier images.
-Laplacian Variance is simple and possibly faster to compute, while Tenengrad 
-may offer better results (which was used further in this study). 
-Note: These metrics measure high-frequency content, not direct focus.
-
-References:
-- Pertuz, S., Puig, D., & Garcia, M. A. (2013). 
-    Analysis of focus measure operators for shape-from-focus. 
-    Pattern Recognition, 46(5), 1415-1432.
+References: - Pertuz, S., Puig, D., & Garcia, M. A. (2013). 
+    Analysis of focus measure operators for shape-from-focus. Pattern
+    Recognition, 46(5), 1415-1432.
 - Blur detection with OpenCV by Adrian Rosebrock, 2015
     https://pyimagesearch.com/2015/09/07/blur-detection-with-opencv/
 - How to identify blurry images at rbaron.net, 2020  
@@ -27,19 +19,16 @@ References:
 - Calculating sharpness of an image at Stack Overflow 
     https://stackoverflow.com/questions/28717054/calculating-sharpness-of-an-image
 
-Usage:
-1. Activate the corresponding environment:
+Usage: 1. Activate the corresponding environment:
    $ source ./envs/general/bin/activate
 
-2. Run the script from the root folder of the project:
+2. Run the script from the root folder of the project: 
    $ python3 ./data/code/compute_sharpness.py
 
-Inputs:
-- Feather file containing the OOD annotation data frame:
+Inputs: - Feather file containing the OOD annotation data frame:
   './data/processed/df_roi.feather'
 
-Outputs:
-- Updated OOD annotation data frame with sharpness metrics:
+Outputs: - Updated OOD annotation data frame with sharpness metrics:
   './data/processed/df_roi.feather'
 """
 
@@ -50,7 +39,6 @@ import numpy as np
 import cv2
 import git
 import multiprocessing as mp
-from functools import partial
 
 # Get the root path of the project using Git and print it for verification
 prj_path = git.Repo('.', search_parent_directories=True).working_tree_dir
@@ -61,7 +49,8 @@ print(f"Root path of the project:\n'{prj_path}'")
 start_time = time.time()
 print("Processing...")
 
-# Read the data frame with the annotation information for each insect box prepared for analysis.
+# Read the data frame with the annotation information for each insect box
+# prepared for analysis.
 # This is the ground truth data = the OOD annotation dataset.
 file_path = os.path.join(prj_path, 'data', 'processed', 'df_roi.feather')
 df = pd.read_feather(file_path)
@@ -80,23 +69,9 @@ print(f"Computing sharpness metrics for: {df.shape[0]} insect boxes...")
 cropped_dir = os.path.join(prj_path, 'data', 'images', 'cropped')
 df['path'] = df['new_filename'].apply(lambda x: os.path.join(cropped_dir, x))
 
-# Helper functions:
-
-# See also https://rbaron.net/blog/2020/02/16/How-to-identify-blurry-images.html
-
-def Lx(img):
-  kernelx = np.array([[0, 0, 0], [-1, 2, -1], [0, 0, 0]])
-  return cv2.filter2D(img, cv2.CV_64F, np.array(kernelx))
-
-def Ly(img):
-  kernely = kernelx = np.array([[0, -1, 0], [0, 2, 0], [0, -1, 0]])
-  return cv2.filter2D(img, cv2.CV_64F, np.array(kernely))
-
-def modified_laplacian(img):
-  return (np.abs(Lx(img)) + np.abs(Ly(img))).mean()
-
+# Helper function:
 def calculate_sharpness_score(row):
-    id_raw = row['id_raw']  # Assign id_raw at the beginning of the function
+    id_raw = row['id_raw']
     try:
         # Load the image
         image = cv2.imread(row['path'])
@@ -106,14 +81,11 @@ def calculate_sharpness_score(row):
         width = round(row['width'])
         height = round(row['height'])
         # Extract the region of the image inside the bounding box.
-        # Note that OpenCV treats image coordinates in (y, x) order and not in (x, y) order.
+        # Note that OpenCV treats image coordinates in (y, x) order and not in
+        # (x, y) order.
         region = image[y:y+height, x:x+width]
         # Convert the region to grayscale
         gray = cv2.cvtColor(region, cv2.COLOR_BGR2GRAY)
-        # Compute the Laplacian of the region and then the "focus"
-        # measure, which is the variance of the Laplacian
-        score_laplace = cv2.Laplacian(gray, cv2.CV_64F).var()
-        score_laplace_modified = modified_laplacian(gray)
         # Compute the Sobel gradient of the region
         sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=5)
         sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=5)
@@ -122,14 +94,15 @@ def calculate_sharpness_score(row):
         # Log the error if needed
         print(f"Error processing image {id_raw}: {e}")
         # Return NaN if there is an error
-        score_laplace = float('nan')
-        score_laplace_modified = float('nan')
         score_sobel = float('nan')
     
     # Returns a tuple with the id_raw and the scores
-    return id_raw, score_laplace, score_laplace_modified, score_sobel
+    return id_raw, score_sobel
 
-# Apply the functions to the data frame
+
+# Apply the function to the data frame in parallel:
+
+# Prepare a list of rows
 list_temp = [row for _, row in df.iterrows()]
 
 # Create a pool of processes. 
@@ -140,7 +113,7 @@ with mp.Pool(n_workers) as pool:
                       iterable=list_temp)
 
 # Convert scores to a DataFrame and assign column names
-scores_df = pd.DataFrame(scores, columns=['id_raw', 'score_laplace', 'score_laplace_modified', 'score_sobel'])
+scores_df = pd.DataFrame(scores, columns=['id_raw', 'score_sobel'])
 
 # Merge with df
 df = pd.merge(df, scores_df, on='id_raw', how='inner')
@@ -150,9 +123,14 @@ df['box_area_rel'] = (df['width'] * df['height']) / (df['width_crop'] * df['heig
 
 
 # Save the data frame with the sharpness metrics
+# - as feather file
 file_path = os.path.join(prj_path, 'data', 'processed', 'df_roi.feather')
 df.to_feather(file_path)
-print(f"Updated OOD annotation data frame saved at:\n'{file_path}'")
+print(f"Updated OOD annotation data frame saved as Feather file at:\n'{file_path}'")
+# - as txt file
+file_path_txt = os.path.join(prj_path, 'data', 'processed', 'df_roi.txt')
+df.to_csv(file_path_txt, sep='\t', index=False, quoting=3)
+print(f"Updated OOD annotation data frame saved as tab separated txt file at:\n'{file_path}'")
 
 
 end_time = time.time()
