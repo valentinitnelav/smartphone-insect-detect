@@ -1,3 +1,32 @@
+# Data download
+
+First, make sure you have the Python environment named `general` installed. 
+If it's not installed, refer to `./envs/README.md` for instructions.
+
+Then use the script `download_zenodo_dataset.py` to download the dataset.
+
+**Important**:
+
+If the Zenodo dataset is "restricted", the script will not be able to download it and will issue a warning.
+If you have been provided with a 'secret' URL, input this URL when prompted by the script. 
+A secret URL typically looks like: `https://zenodo.org/records/15096610?token=<SOME-LONG-TOKEN>`
+
+The script downloads the tar.gz files from Zenodo, one by one, into the `./zenodo` folder. It then automatically decompresses these files and moves the contents to their intended locations in this local repository. The duration of this process depends on your internet speed and system performance, as the total download size is approximately 23 GB, which decompresses to around 29 GB. Please be patient.
+
+**Execution Steps**:
+
+Open a terminal and navigate to the repository directory:
+```shell
+# In a terminal, locate this repository
+cd path/to/smartphone-insect-detect
+
+# Activate the environment:
+source ./envs/general/bin/activate
+
+# Run the script:
+python3 ./data/code/download_zenodo_dataset.py
+```
+
 # Data processing code
 
 The following scripts and jupyter notebooks (in `./data/code/`) were executed in the order below to process the data.
