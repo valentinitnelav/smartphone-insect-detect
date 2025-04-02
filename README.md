@@ -1,5 +1,7 @@
 # Overview
 
+This codebase is archived on Zenodo: [![DOI](https://zenodo.org/badge/955996849.svg)](https://doi.org/10.5281/zenodo.15127689)
+
 This repository hosts the source code accompanying the research paper:
 
 > Ștefan V., Stark T., Wurm M., Taubenböck H., Knight T.M. (2025). Successes and limitations of pretrained YOLO detectors applied to unseen time-lapse images for automated pollinator monitoring. *(Preprint)*
