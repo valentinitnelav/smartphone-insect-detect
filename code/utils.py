@@ -9,19 +9,26 @@ from PIL import ImageOps, Image
 import cv2
 import matplotlib.pyplot as plt
 
-import concurrent.futures
 from concurrent.futures import ProcessPoolExecutor
 
 
 def df_to_via_json(df, project_name, attribute_cols):
     """
     Convert a DataFrame to a JSON string in the VIA format.
-    :param df: DataFrame with the following columns: path, x, y, width, height, 
-            and other attribute columns
-    :param project_name: Name of the project
-    :param attribute_cols: List of column names that will be used to populate the 
-            region_attributes section of the VIA data structure
-    :return: JSON string in the VIA format
+    
+    Args:
+        df (pandas.DataFrame):
+            DataFrame with the following columns: path, x, y, width, height, 
+            and other attribute columns.
+        project_name (str): 
+            Name for the VIA project stored in the JSON file.
+        attribute_cols (list of str): 
+            List of column names that will be used to populate the
+            region_attributes section of the VIA data structure.
+
+    Returns: 
+        dict:
+            JSON dictionary in the VIA format.
     """
 
     via_data = {
@@ -96,12 +103,16 @@ def df_to_via_json(df, project_name, attribute_cols):
     return via_data
 
 
-
 def via_json_to_df(json_file_path):
     """
-    Convert a JSON file in the VIA format to a DataFrame.
-    :param json_file_path: Path to the JSON file
-    :return: DataFrame with the data from the JSON file
+    Convert a JSON file in the VIA format to a pandas.DataFrame.
+    
+    Args:
+        json_file_path (str): Path to the JSON file
+    
+    Returns: 
+        pandas.DataFrame:
+            DataFrame with data from the VIA JSON file.
     """
     with open(json_file_path) as file:
         via_data = json.load(file)
@@ -130,33 +141,38 @@ def df_to_coco(df, img_path, label_mapping, single_class=False, include_metadata
     """
     Converts a DataFrame with box annotations to a COCO format as dictionary.
 
-    This function takes a pandas DataFrame containing image annotations (boxes) 
-    and a path to the image directory. It returns a dictionary in COCO format with 
-    information about the dataset, images, annotations, and categories.
+    This function takes a pandas DataFrame containing image annotations (boxes)
+    and a path to the image directory. It returns a dictionary in COCO format
+    with information about the dataset, images, annotations, and categories.
     
     Note that certain custom column names are expected to appear in the DataFrame:
-    - 'new_filename': The name of the image file.
-    - 'width_crop': The width of the cropped image.
-    - 'height_crop': The height of the cropped image.
-    - 'date': The date when the image was captured.
-    - 'p1_labels': The label of the insect as per previous study.
-    - 'x': The x-origin coordinate of the bounding box (in pixels).
-    - 'y': The y-origin coordinate of the bounding box (in pixels).
-    - 'width': The width of the bounding box (in pixels).
-    - 'height': The height of the bounding box (in pixels).
+    - `ew_filename`: The name of the image file.
+    - `width_crop`: The width of the cropped image.
+    - `height_crop`: The height of the cropped image.
+    - `date`: The date when the image was captured.
+    - `p1_labels`: The label of the insect as per previous study.
+    - `x`: The x-origin coordinate of the bounding box (in pixels).
+    - `y`: The y-origin coordinate of the bounding box (in pixels).
+    - `width`: The width of the bounding box (in pixels).
+    - `height`: The height of the bounding box (in pixels).
     Metadata optional columns:
-    - 'seq_id': The sequence/insect ID.
+    - `seq_id`: The sequence/insect ID.
     
-
-    Parameters:
-    df (pandas.DataFrame): The DataFrame with image annotations.
-    img_path (str): The directory path where images are stored.
-    single_class (bool): If True, all annotations are assigned to a single category.
-    include_metadata (bool): If True, additional metadata is included in the annotations.
-    label_mapping: A dictionary that maps the original labels to their original ids.
+    Args:
+        df (pandas.DataFrame): 
+            The DataFrame with image annotations.
+        img_path (str): 
+            The directory path where images are stored.
+        single_class (bool): 
+            If True, all annotations are assigned to a single category.
+        include_metadata (bool): 
+            If True, additional metadata is included in the annotations.
+        label_mapping (dict): 
+            A dictionary that maps the original labels to their original ids.
 
     Returns:
-    dict: A dictionary in COCO dataset format. This can be later saved to a JSON file.
+        dict:
+            A dictionary in COCO dataset format. This can be later saved to a JSON file.
     """
 
     # Initialize the COCO dataset structure
@@ -252,9 +268,16 @@ def df_to_coco(df, img_path, label_mapping, single_class=False, include_metadata
 def get_image_dim(row, path_col_name):
     """
     Get the dimensions of an image using PIL.
-    :param row: A row of a DataFrame containing the path to the image.
-    :param path_col_name: The name of the column containing the image path.
-    :return: A pandas Series containing the image dimensions and image path.
+    
+    Args:
+        row (pandas.Series): 
+            A row of a DataFrame containing the path to the image.
+        path_col_name (str):
+            The name of the column containing the image path.
+    
+    Returns: 
+        pandas.Series:
+            A pandas Series containing the image dimensions and image path.
     """
     path = row[path_col_name]
     
@@ -288,12 +311,22 @@ def get_image_dim(row, path_col_name):
 
 
 def adjust_img_exif(img):
-    """   
-    Useful links
-    https://sirv.com/help/articles/rotate-photos-to-be-upright/
-    https://exif.readthedocs.io/en/latest/api_reference.html?highlight=orientation#exif.Orientation
-    https://exiv2.org/tags.html, 274 = Exif.Image.Orientation
-    https://exiftool.org/TagNames/EXIF.html
+    """
+    Adjusts the EXIF orientation.
+    
+    Useful links:
+    - https://sirv.com/help/articles/rotate-photos-to-be-upright/
+    - https://exif.readthedocs.io/en/latest/api_reference.html?highlight=orientation#exif.Orientation
+    - https://exiv2.org/tags.html, 274 = Exif.Image.Orientation
+    - https://exiftool.org/TagNames/EXIF.html
+    
+    Args:
+        img (PIL.Image.Image):
+            Image object opened using PIL via Image.open()
+    
+    Returns:
+        PIL.Image.Image:
+            Adjusted image.
     """
     exif_dict = img._getexif()
     if exif_dict:
@@ -316,6 +349,16 @@ def adjust_img_exif(img):
 
 
 def detect_extensions(folder_path):
+    """
+    Extracts file extensions for given folder path. 
+
+    Args:
+        folder_path (str): A given folder path.
+
+    Returns:
+        str: 
+            File extensions.
+    """
     extensions = {}
     for filename in os.listdir(folder_path):
         _, ext = os.path.splitext(filename)
@@ -327,6 +370,21 @@ def detect_extensions(folder_path):
 
 
 def read_files(folder_path, extensions):
+    """
+    Reads files from a specified directory with specific provided extensions and
+    returns a DataFrame containing file name, path and extension information.
+
+    Args:
+        folder_path (str):
+            The path to the directory containing the files. 
+        extensions (list of str):
+            A list of file extensions to include, such as ['.jpg', '.png'].
+
+    Returns:
+        pandas.DataFrame:
+            A DataFrame with columns 'file_name_no_ext', 'file_name', and
+            'file_path', containing information about the files.
+    """
     files_lst = []
     for file_name in os.listdir(folder_path):
         file_name_no_ext, ext = os.path.splitext(file_name)
@@ -338,12 +396,18 @@ def read_files(folder_path, extensions):
     return df
 
 
-# Functions for reading YOLo txt prediction files
 
 def read_yolo_txt(file_paths):
     """
-    Read the YOLO txt files (serial not parallel) and return a pandas data frame.
-    The input `file_paths` is a list of file paths.
+    Reads YOLO format text files with predictions and returns a DataFrame.
+    
+    Args:
+        file_paths (list of str): 
+            A list of file paths to the YOLO prediction text files.
+    
+    Returns:
+        pandas.DataFrame: 
+            A DataFrame with prediction data.
     """
     data = []
     for file in file_paths:
@@ -360,8 +424,19 @@ def read_yolo_txt(file_paths):
     return df
 
 
-# Two functions for reading the txt files in parallel
 def read_single_file(file):
+    """
+    Reads a single YOLO format text file and extracts prediction data.
+    
+    Args:
+        file (str): 
+            The path to the YOLO prediction text file to be read.
+    
+    Returns:
+        list of list: 
+            A list where each inner list contains the prediction data for one
+            line of the file.
+    """
     data = []
     with open(file, 'r') as f:
         lines = f.read().strip().split('\n')
@@ -371,7 +446,21 @@ def read_single_file(file):
             data.append(values)
     return data
 
+
 def read_yolo_txt_parallel(file_paths, n_workers=4):
+    """
+    Reads YOLO format text files in parallel and returns a DataFrame.
+    
+    Args:
+        file_paths (list of str): 
+            Paths to the YOLO prediction files.
+        n_workers (int, optional): 
+            Number of parallel processes (default is 4).
+    
+    Returns:
+        pandas.DataFrame: 
+            DataFrame with YOLO prediction data.
+    """
     data = []
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
         results = list(executor.map(read_single_file, file_paths))
@@ -387,10 +476,17 @@ def read_yolo_txt_parallel(file_paths, n_workers=4):
 
 def compute_iou(box1, box2):
     """
-    Compute the intersection over union (IoU) of two bounding boxes.
-    :param box1: Tuple of (x, y, w, h)
-    :param box2: Tuple of (x, y, w, h)
-    :return: Intersection over union (IoU) of the two bounding boxes
+    Computes the Intersection over Union (IoU) of two bounding boxes.
+    
+    Args:
+        box1 (tuple): 
+            A tuple (x, y, w, h) representing the first bounding box.
+        box2 (tuple): 
+            A tuple (x, y, w, h) representing the second bounding box.
+        
+    Returns:
+        float: 
+            The IoU as a float between 0 and 1.
     """
     x1, y1, w1, h1 = box1
     x2, y2, w2, h2 = box2
@@ -400,8 +496,8 @@ def compute_iou(box1, box2):
     x_max = min(x1 + w1, x2 + w2)
     y_max = min(y1 + h1, y2 + h2)
     
-    # Why add 1 - https://stackoverflow.com/a/58108241/5193830
     intersection_area = max(0, x_max - x_min + 1) * max(0, y_max - y_min + 1)
+    # Why add 1: https://stackoverflow.com/a/58108241/5193830
     
     area1 = w1 * h1
     area2 = w2 * h2
@@ -413,9 +509,16 @@ def compute_iou(box1, box2):
 
 def apply_iou_roi(row):
     """
-    Compute the IOU between the ROI boxes and the insect boxes
-    Loop trough each row of df and compute IoU between the ROI coordinates and 
-    the insect coordinates
+    Computes IoU between the ROI box and the insect box in a DataFrame row.
+    
+    Args:
+        row (pandas.Series): 
+            A DataFrame row containing the bounding box coordinates for the ROI
+            and insect boxes.
+    
+    Returns:
+        float: 
+            IoU value in the range [0, 1].
     """
     box1 = [row['x'], row['y'], row['width'], row['height']]
     box2 = [row['x_roi'], row['y_roi'], row['width_roi'], row['height_roi']]
@@ -425,18 +528,24 @@ def apply_iou_roi(row):
    
 def calculate_bounding_box_crop(df_group, dtype_dict):
     """
-    Calculate the bounding box for cropping an image based on the insect and ROI
+    Calculate a bounding box for cropping an image based on insect and ROI
     boxes.
     
     This function computes a bounding box that encloses all provided insect
     boxes and the ROI box within a given image. It only considers boxes from
-    sequences where the 'keep_seq' flag is True, indicating that the insect
+    sequences where the `keep_seq` flag is True, indicating that the insect
     within the sequence of frames interacts at some point with the target
-    flower. It also includes the 'new_filename' corresponding to each 'path'.
+    flower. It also includes the `new_filename` corresponding to each `path`.
     
-    Parameters:
-       df_group (pandas.DataFrame): A group of rows from the original DataFrame.
-       dtype_dict (dict): A dictionary specifying the data types for the output columns.
+    Args:
+        df_group (pandas.DataFrame):
+            Filtered DataFrame group with 'keep_seq' True.
+        dtype_dict (dict):
+            Data types for the output DataFrame columns.
+    
+    Returns:
+        pandas.DataFrame:
+            Bounding box coordinates and 'new_filename'.
     """
     # Consider only the boxes from the sequences that touch the target flower
     df_group = df_group[df_group['keep_seq'] == True]
@@ -472,11 +581,15 @@ def calculate_bounding_box_crop(df_group, dtype_dict):
 
 def check_out_of_bounds(row):
     """
-    For each row in given data frame, check if boxes are out of image bounds.
-    - row['x'] + row['width'] > img_width, store the result in a new column 'width_out_of_bounds'
-    - row['y'] + row['height'] > img_height, store the result in a new column 'height_out_of_bounds'
+    Check if bounding boxes exceed image boundaries for a DataFrame row.
     
-    Returns a pandas Series with True/False values for each condition.
+    Args:
+        row (pandas.Series):
+            The DataFrame row with box and image dimensions.
+        
+    Returns:
+        pandas.Series:
+            With True/False.
     """
     width_out_of_bounds = row['x'] + row['width'] > row['img_width_pil']
     height_out_of_bounds = row['y'] + row['height'] > row['img_height_pil']
@@ -489,26 +602,31 @@ def adjust_coordinates(row):
     """    
     Adjusts the coordinates of a insect bounding box based on a given crop area.
     
-    This function calculates the intersection between an insect box and a crop area.
-    If the insect box is entirely within the crop area, the coordinates are updated
-    by subtracting the crop area coordinates from the insect box coordinates. Otherwise, it
-    adjusts the coordinates of the insect box to match the intersection area (overlap) with the crop area.
-    That is, the original insect box is cropped to the overlapping portion with the cropping box.
+    This function calculates the intersection between an insect box and a crop
+    area. If the insect box is entirely within the crop area, the coordinates
+    are updated by subtracting the crop area coordinates from the insect box
+    coordinates. Otherwise, it adjusts the coordinates of the insect box to
+    match the intersection area (overlap) with the crop area. That is, the
+    original insect box is cropped to the overlapping portion with the cropping
+    box.
     
-    Parameters:
-        row (pd.Series): A pandas Series representing a row of a DataFrame containing the bounding box information.
+    Args:
+        row (pd.Series): 
+            A pandas Series representing a row of a DataFrame containing the
+            bounding box information.
             The row should contain the following columns:
-                - 'x': The x-coordinate of the bounding box.
-                - 'y': The y-coordinate of the bounding box.
-                - 'width': The width of the bounding box.
-                - 'height': The height of the bounding box.
-                - 'x_crop': The x-coordinate of the crop area.
-                - 'y_crop': The y-coordinate of the crop area.
-                - 'width_crop': The width of the crop area.
-                - 'height_crop': The height of the crop area.
+            - `x`: The x-coordinate of the bounding box.
+            - `y`: The y-coordinate of the bounding box.
+            - `width`: The width of the bounding box.
+            - `height`: The height of the bounding box.
+            - `x_crop`: The x-coordinate of the crop area.
+            - `y_crop`: The y-coordinate of the crop area.
+            - `width_crop`: The width of the crop area.
+            - `height_crop`: The height of the crop area.
 
     Returns:
-        None. The function modifies the 'x', 'y', 'width', and 'height' columns of the input row in-place.
+        None:
+            Modifies `x`, `y`, `width`, and `height` in-place.
     """
     
     # Get the coordinates of the existing insect box    
@@ -550,14 +668,23 @@ def visualize_image(df, path, crop=False, show_crop_bbx=True, show_roi=True):
     Visualizes an image with bounding boxes of insects and optional cropping.
 
     Args:
-        df (DataFrame): Data frame containing the image and bounding box information.
-        path (str): Path to the image file.
-        crop (bool, optional): Flag indicating whether to crop the image based on the crop coordinates.
-                               Defaults to False.
-        show_crop_bbx (bool, optional): Flag indicating whether to show the crop bounding box.
-                                        Defaults to True.
-        show_roi (bool, optional): Flag indicating whether to show the region of interest bounding box.
-                                    Defaults to True. 
+        df (DataFrame): 
+            Data frame containing the image and bounding box information.
+        path (str): 
+            Path to the image file.
+        crop (bool, optional): 
+            Flag indicating whether to crop the image based on the crop
+            coordinates. Defaults to False.
+        show_crop_bbx (bool, optional): 
+            Flag indicating whether to show the crop bounding box. 
+            Defaults to True.
+        show_roi (bool, optional): 
+            Flag indicating whether to show the region of interest bounding box.
+            Defaults to True. 
+    Returns:
+        None: 
+            This function displays the image with bounding boxes and does not
+            return anything.
     """
 
     # Filter rows based on the image path
@@ -607,7 +734,18 @@ def visualize_image(df, path, crop=False, show_crop_bbx=True, show_roi=True):
 
 def crop_image(row, dir_path):
     """
-    Crop an image based on the cropping box coordinates in a given DataFrame row.
+    Crops and saves an image using bounding box coordinates from a DataFrame row.
+    
+    Args:
+        row (pandas.Series): 
+            A DataFrame row containing image path, cropping coordinates and
+            `new_filename`.
+        dir_path (str): 
+            Directory path where the cropped image will be saved.
+    
+    Effects:
+        Modifies `error_paths` global list if an error occurs during image
+        processing.
     """
     global error_paths
     try:
