@@ -1,10 +1,10 @@
 # Overview
 
-This codebase is archived on Zenodo: [![DOI](https://zenodo.org/badge/955996849.svg)](https://doi.org/10.5281/zenodo.15127689)
-
 This repository hosts the source code accompanying the research paper:
 
-> Ștefan V., Stark T., Wurm M., Taubenböck H., Knight T.M. (2025). Successes and limitations of pretrained YOLO detectors applied to unseen time-lapse images for automated pollinator monitoring. *(Preprint)*
+> Ștefan V., Stark T., Wurm M., Taubenböck H., Knight T.M. (2025). Successes and limitations of pretrained YOLO detectors applied to unseen time-lapse images for automated pollinator monitoring. Preprint (Version 1) available at Research Square, URL: https://www.researchsquare.com/article/rs-6335312/v1 DOI: https://doi.org/10.21203/rs.3.rs-6335312/v1
+
+This GitHub Repository is archived on Zenodo: [![DOI](https://zenodo.org/badge/955996849.svg)](https://doi.org/10.5281/zenodo.15127689)
 
 ## How to use this repository
 
