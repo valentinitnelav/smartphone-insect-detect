@@ -4,6 +4,10 @@ This repository hosts the source code accompanying the research paper:
 
 > Ștefan V., Stark T., Wurm M., Taubenböck H., Knight T.M. (2025). Successes and limitations of pretrained YOLO detectors applied to unseen time-lapse images for automated pollinator monitoring. Preprint (Version 1) available at Research Square, URL: https://www.researchsquare.com/article/rs-6335312/v1 DOI: https://doi.org/10.21203/rs.3.rs-6335312/v1
 
+<img src="results/figures/fig_sequence_detection_seq_id_52.jpg" alt="Sequence Detection" style="width:50%;">
+
+A time-lapse image showing insect detection in smartphone-captured images, using NMS-optimized pre-trained YOLO models that were trained on citizen science datasets (e.g., from iNaturalist, Observation.org).
+
 This GitHub Repository is archived on Zenodo: [![DOI](https://zenodo.org/badge/955996849.svg)](https://doi.org/10.5281/zenodo.15127689)
 
 ## How to use this repository

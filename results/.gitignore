@@ -1,2 +1,5 @@
 *.csv
+
+# Ignore all jpg files, except the negations (!)
 *.jpg
+!figures/fig_sequence_detection_seq_id_52.jpg
