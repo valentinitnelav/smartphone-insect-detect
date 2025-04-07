@@ -6,7 +6,7 @@ This repository hosts the source code accompanying the research paper:
 
 <img src="results/figures/fig_sequence_detection_seq_id_52.jpg" alt="Sequence Detection" style="width:70%;">
 
-A time-lapse image showing insect detection in smartphone-captured images, using NMS-optimized pre-trained YOLO models that were trained on citizen science datasets (e.g., from iNaturalist, Observation.org).
+Pollinator detection in smartphone-captured time-lapse images using NMS-optimized YOLO models that were [previously trained][1] on citizen science images (e.g., from iNaturalist, Observation.org).
 
 This GitHub Repository is archived on Zenodo: [![DOI](https://zenodo.org/badge/955996849.svg)](https://doi.org/10.5281/zenodo.15127689)
 
@@ -14,7 +14,7 @@ This GitHub Repository is archived on Zenodo: [![DOI](https://zenodo.org/badge/9
 
 You have two options for accessing this repository: `git clone` or download it directly.
 
-To clone the repository, ensure that [git][1] is installed, then run the following command in your terminal:
+To clone the repository, ensure that [git][2] is installed, then run the following command in your terminal:
 ```
 git clone https://github.com/valentinitnelav/smartphone-insect-detect.git
 ```
@@ -49,7 +49,8 @@ For Python & R environments, see `./envs/README.md`.
 This project was developed on Linux using open-source software for the following reasons:
 
 - GPU Compatibility: The GPU workstation and cluster we had access to run on Linux,
-- Costs & Open-Source benefits: Linux is free and open-source, enhancing accessibility and transparency. This aligns with our project's commitment to open science and the [FAIR principles][2], allowing others to engage with, review, build upon, and redistribute our work.
+- Costs & Open-Source benefits: Linux is free and open-source, enhancing accessibility and transparency. This aligns with our project's commitment to open science and the [FAIR principles][3], allowing others to engage with, review, build upon, and redistribute our work.
 
-[1]: https://git-scm.com/downloads
-[2]: https://www.go-fair.org/fair-principles/
+[1]: https://www.nature.com/articles/s41598-023-43482-3
+[2]: https://git-scm.com/downloads
+[3]: https://www.go-fair.org/fair-principles/
