@@ -2,7 +2,7 @@
 
 This repository hosts the source code accompanying the research paper:
 
-> Ștefan V., Stark T., Wurm M., Taubenböck H., Knight T.M. (2025). Successes and limitations of pretrained YOLO detectors applied to unseen time-lapse images for automated pollinator monitoring. Preprint (Version 1) available at Research Square, URL: https://www.researchsquare.com/article/rs-6335312/v1 DOI: https://doi.org/10.21203/rs.3.rs-6335312/v1
+> Ștefan V., Stark T., Wurm M., Taubenböck H., Knight T.M. (2025). Successes and limitations of pretrained YOLO detectors applied to unseen time-lapse images for automated pollinator monitoring. Sci Rep 15, 30671 (2025). https://doi.org/10.1038/s41598-025-16140-z
 
 <img src="results/figures/fig_sequence_detection_seq_id_52.jpg" alt="Sequence Detection" style="width:70%;">
 
